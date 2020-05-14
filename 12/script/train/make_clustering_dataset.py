@@ -16,9 +16,9 @@ os.chdir("{}/..".format(DIR_PATH)) # script/ に移動
 def select_chart_data(df):
     ymd = df.sample(1)["Date"].values[0]
     ymd_dt = datetime.datetime.strptime(ymd, "%Y-%m-%d")
-    ymd_dt_6m = ymd_dt - datetime.timedelta(days=180)
-    ymd_6m = ymd_dt_6m.strftime("%Y-%m-%d")
-    chart_data = df.query("Date >= @ymd_6m and Date <= @ymd").reset_index(drop=True)
+    ymd_dt_2w = ymd_dt - datetime.timedelta(days=14)
+    ymd_2w = ymd_dt_2w.strftime("%Y-%m-%d")
+    chart_data = df.query("Date >= @ymd_2w and Date <= @ymd").reset_index(drop=True)
     return chart_data
 
 def _filename(chart_data):
@@ -39,9 +39,9 @@ def save_candlestick_img_with_volume(df, save_filepath):
     ma25_value = numpy.array(df["Open_MA_25"])
     ma75_value = numpy.array(df["Open_MA_75"])
     
-    ax[0].plot(x_list, ma5_value, markersize=2, color='black')
-    ax[0].plot(x_list, ma25_value, markersize=2, color='y')
-    ax[0].plot(x_list, ma75_value, markersize=2, color='b')
+    #ax[0].plot(x_list, ma5_value, markersize=2, color='black')
+    #ax[0].plot(x_list, ma25_value, markersize=2, color='y')
+    #ax[0].plot(x_list, ma75_value, markersize=2, color='b')
     ax[0].grid(False)
     ax[0].set_xticklabels([])
     ax[0].set_yticklabels([])
@@ -100,7 +100,7 @@ def run(n, with_volume=False):
         if len(df) <= 100:
             continue
         chart_data = select_chart_data(df)
-        if len(chart_data) <= 90 or chart_data["Volume"].mean() < 20000:
+        if len(chart_data) <= 7 or chart_data["Volume"].mean() < 20000:
             continue
         save_filepath = "data/img/clustering/{}".format(_filename(chart_data))
         if with_volume:
